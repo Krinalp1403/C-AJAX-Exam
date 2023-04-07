@@ -23,6 +23,17 @@ namespace Employee
             var match = regex.Match(email);
             return match.Success;
         }
+        public static bool IsValidName(this string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            string pattern = @"^[A-Za-z]+[\s][A-Za-z]+[.][A-Za-z]+$";
+
+            var regex = new Regex(pattern);
+            var match = regex.Match(name);
+            return match.Success;
+        }
 
         public static bool IsValidPhoneNumber(this long number)
         {
@@ -38,6 +49,7 @@ namespace Employee
         {
             return Enum.GetNames(typeof(Department)).Contains(desig);
         }
+
     }
 
     class Program
@@ -125,9 +137,9 @@ namespace Employee
 
                 Console.Write("Enter Name : ");
                 e1.Name = Console.ReadLine().Trim();
-                if (string.IsNullOrEmpty(e1.Name))
+                if (string.IsNullOrEmpty(e1.Name) || !e1.Email.IsValidName())
                 {
-                    Console.WriteLine("Your Name is Required!");
+                    Console.WriteLine("Invalid Name!");
                     Console.ReadKey();
                     return;
                 }
@@ -150,6 +162,13 @@ namespace Employee
 
                 Console.Write("Designation : ");
                 e1.Designation = Convert.ToString(Console.ReadLine().Trim());
+                if (string.IsNullOrEmpty(e1.Designation) || !e1.Designation.IsValidName())
+                {
+                    Console.WriteLine("Invalid Designation!");
+                    Console.ReadKey();
+                    return;
+                }
+
 
                 Console.Write("Enter City : ");
                 e1.City = Console.ReadLine().Trim();
@@ -179,6 +198,8 @@ namespace Employee
                     Console.ReadKey();
                     return;
                 }
+
+
 
                 Console.Write("Enter Date of Joining : ");
                 var DOJ = Convert.ToDateTime(Console.ReadLine());
