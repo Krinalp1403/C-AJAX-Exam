@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,6 +11,14 @@ using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Employee
 {
+    public static class DateTimeExtensions
+    {
+        public static string ToCustomDateString(this DateTime dateTime)
+        {
+            return dateTime.ToString("dd-MMM-yyyy");
+        }
+    }
+
     public static class MyExtensions
     {
         public static bool IsValidEmail(this string email)
@@ -28,7 +37,7 @@ namespace Employee
             if (string.IsNullOrEmpty(name))
                 return false;
 
-            string pattern = @"^[A-Za-z]+[\s][A-Za-z]+[.][A-Za-z]+$";
+            string pattern = @"^[a-zA-Z]+$";
 
             var regex = new Regex(pattern);
             var match = regex.Match(name);
@@ -37,7 +46,7 @@ namespace Employee
 
         public static bool IsValidPhoneNumber(this long number)
         {
-            return number.ToString().Length <= 10;
+            return number.ToString().Length >= 10;
         }
 
         public static bool IsValidSalary(this double salary)
@@ -80,7 +89,7 @@ namespace Employee
             public Int64 Postcode { get; set; }
             public long PhoneNumber { get; set; }
             public string Email { get; set; }
-            public DateTime DateOfJoining { get; set; }
+            public string DateOfJoining { get; set; }
             public string TotalExperience { get; set; }
             public string Remarks { get; set; }
             public Department Department { get; set; }
@@ -109,7 +118,7 @@ namespace Employee
                         break;
 
                     case 2:
-                        SaveEmployeesToJson();
+                   
                         Console.ReadKey();
                         break;
 
@@ -136,39 +145,55 @@ namespace Employee
                 Console.WriteLine("ID : " + e1.EmployeeID);
 
                 Console.Write("Enter Name : ");
-                e1.Name = Console.ReadLine().Trim();
-                if (string.IsNullOrEmpty(e1.Name) || !e1.Email.IsValidName())
+                e1. Name = Console.ReadLine().Trim();
+                while (string.IsNullOrEmpty(e1.Name) || !e1.Name.IsValidName())
                 {
                     Console.WriteLine("Invalid Name!");
+                    Console.Write("Enter Name Correctly : ");
+                    e1.Name = Console.ReadLine().Trim();
+
                     Console.ReadKey();
-                    return;
+                    
                 }
 
 
-                Console.Write("Enter DOB : ");
-                var DOB = Convert.ToDateTime(Console.ReadLine());
-                e1.DOB = DOB;
+                Console.Write("Enter DOB in dd-MMM-yyyy Format: ");
+                string dobString = Console.ReadLine().Trim();
+
+                DateTime dob;
+                while (!DateTime.TryParseExact(dobString, "dd-MMM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dob))
+                {
+                    Console.WriteLine("Invalid date format! Please enter date in the format dd-MMM-yyyy.");
+                    Console.Write("Enter DOB in dd-MMM-yyyy Format: ");
+                    dobString = Console.ReadLine().Trim();
+                }
+
+                e1.DOB = dob;
+
+
+            
 
 
                 Console.Write("Please enter your gender (M/F): ");
                 string genderString = Console.ReadLine().ToUpper();
                 Gender gender;
 
-                if (!Enum.TryParse<Gender>(genderString, out gender))
+                while (!Enum.TryParse<Gender>(genderString, out gender))
                 {
                     Console.WriteLine("Invalid gender input. Please try again.");
                     return;
                 }
+                e1.Gender = gender;
 
                 Console.Write("Designation : ");
                 e1.Designation = Convert.ToString(Console.ReadLine().Trim());
-                if (string.IsNullOrEmpty(e1.Designation) || !e1.Designation.IsValidName())
+                while (string.IsNullOrEmpty(e1.Designation) || !e1.Designation.IsValidName())
                 {
                     Console.WriteLine("Invalid Designation!");
                     Console.ReadKey();
                     return;
                 }
-
+                
 
                 Console.Write("Enter City : ");
                 e1.City = Console.ReadLine().Trim();
@@ -201,13 +226,36 @@ namespace Employee
 
 
 
-                Console.Write("Enter Date of Joining : ");
-                var DOJ = Convert.ToDateTime(Console.ReadLine());
-                e1.DateOfJoining = DOJ;
+                Console.Write("Enter your date of joining in dd-mmm-yyyy format: ");
+                string dateStr = Console.ReadLine();
+                e1.DateOfJoining = dateStr;
 
-                var today = Convert.ToDateTime(DateTime.Today);
-                var TotalExperiences = today-DOJ; 
-                Console.WriteLine("Total Experience : "+ TotalExperiences);
+                // Convert the date string to a DateTime object
+                DateTime dateObj;
+                if (DateTime.TryParseExact(dateStr, "dd-MMM-yyyy", null, System.Globalization.DateTimeStyles.None, out dateObj))
+                {
+                    // Calculate the total experience in years
+                    TimeSpan experience = DateTime.Now - dateObj;
+                    double totalExperience = experience.TotalDays / 365;
+
+                    var total = totalExperience.ToString("0.00") + " years";
+                    // Print the total experience
+                    Console.WriteLine("Total experience: " + total);
+                    e1.TotalExperience = total;
+
+                }
+                else
+                {
+                    Console.WriteLine("Error: Invalid date format. Please enter the date in dd-mmm-yyyy format.");
+                }
+
+
+
+
+
+
+
+
 
                 Console.Write("Enter Remarks : ");
                 e1.Remarks = Console.ReadLine().Trim();
@@ -224,36 +272,52 @@ namespace Employee
                 e1.Department = depart;
 
 
-                Console.Write("Salary (Required, Min 10,000 & Max 50,000): ");
                 double salary;
-                if (!double.TryParse(Console.ReadLine().Trim(), out salary) || !salary.IsValidSalary())
-                {
-                    Console.WriteLine("Invalid Salary!");
-                    Console.ReadKey();
+                bool validSalary = false;
 
-                    return;
+                while (!validSalary)
+                {
+                    Console.Write("Salary (Required, Min 10,000 & Max 50,000): ");
+                    if (!double.TryParse(Console.ReadLine().Trim(), out salary) || !salary.IsValidSalary())
+                    {
+                        Console.WriteLine("Invalid Salary!");
+                    }
+                    else
+                    {
+                        validSalary = true;
+                        e1.MonthlySalary = salary;
+                    }
                 }
-                e1.MonthlySalary = salary;
+
 
 
                 Console.WriteLine("All Fields are Validated..");
 
-                var fileName = @"D:\Krinal C# AJAX Exam\Employee\Files\EmployeeData_TodayDate.json";
-                var jsonData = System.IO.File.ReadAllText(fileName);
+                var fileName = @"F:\C# AJAX Exam\Employee\Files\EmployeeData_TodayDate.json";
 
-                //if (jsonData.)
-                //{
-                    // Read existing json data
-                    // De-serialize to object or create new list
-                    var employeeList = JsonConvert.DeserializeObject<List<Employee>>(jsonData) ?? new List<Employee>();
+                if (File.Exists(fileName))
+                {
+                    var jsonData = File.ReadAllText(fileName);
 
-                    employeeList.Add(e1);
-                //}
-         
+                    var employeeList = JsonConvert.DeserializeObject<List<Employee>>(jsonData);
+                    employeeList.AddRange(employees);
 
-                //employees.Add(e1);
+                    var updatedJsonData = JsonConvert.SerializeObject(employeeList, Formatting.Indented);
+                    File.WriteAllText(fileName, updatedJsonData);
 
-                SaveEmployeesToJson();
+                    Console.WriteLine("Employee data appended to EmployeeData_TodayDate.json file.");
+                }
+                else
+                {
+                    employees.Add(e1);
+                    var json = JsonConvert.SerializeObject(employees, Formatting.Indented);
+
+                    File.WriteAllText(fileName, json);
+
+                    Console.WriteLine("Employee data saved to EmployeeData_TodayDate.json file.");
+                }
+
+                //SaveEmployeesToJson();
             }
             catch (Exception ex)
             {
@@ -261,34 +325,12 @@ namespace Employee
             }
         }
 
-        static void SaveEmployeesToJson()
-        {
-        
+        //static void SaveEmployeesToJson()
+        //{
 
 
+       
 
-
-
-            string fileName = @"D:\Krinal C# AJAX Exam\Employee\Files\EmployeeData_TodayDate.json";
-
-            string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
-
-            File.AppendAllText(fileName, json);
-            Console.WriteLine("Employee data saved to  EmployeeData_TodayDate.json file.");
-
-
-            //Employee e2 = JsonConvert.DeserializeObject<Employee>(json);
-            //Console.WriteLine("--------------- JSON Deserialize ----------------");
-
-            //Console.WriteLine("Reading from the file..");
-            //string jsonDataFromFile = File.ReadAllText(fileName);
-            //Employee e3 = JsonConvert.DeserializeObject<Employee>(jsonDataFromFile);
-
-            //Console.WriteLine("Name : " + e3.Name);
-            //Console.WriteLine("Age : " + e3.Email);
-            //Console.WriteLine("City : " + e3.City);
-
-
-        }
+        //}
     }
 }
