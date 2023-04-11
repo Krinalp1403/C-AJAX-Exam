@@ -1,10 +1,11 @@
+
 $(document).ready(function () {
   var table = null;
-
   $.ajax({
-    url: 'EmployeeData_TodayDate.json',
+    url: 'EmployeeData_07_04_2023.json',
     dataType: 'json',
     success: function (data) {
+
       table = $('#EmployeeTable').DataTable({
         data: data,
         "lengthChange": false,
@@ -15,26 +16,29 @@ $(document).ready(function () {
         bInfo: false,
         columns: [{
             data: 'EmployeeID',
+            sorting: false,
             orderable: false
           },
           {
-            data: 'Name'
+            data: 'Name',
           },
           {
             data: 'Department',
+            type: 'html',
+
             render: function (data, type, row) {
               switch (data) {
-                case 0:
-                  return '<span style="color:red">Sales</span>';
-                case 1:
-                  return '<span style="color:green">Marketing</span>';
-                case 2:
-                  return '<span style="color:black">Development</span>';
-                case 3:
-                  return '<span style="color:blue">QA</span>';
-                case 4:
-                  return '<span style="color:orange">HR</span>';
-                case 5:
+                case 'Sales':
+                  return '<span style="color:#ff0000">Sales</span>';
+                case 'Marketing':
+                  return '<span style="color:#005400">Marketing</span>';
+                case 'Development':
+                  return '<span style="color:#000">Development</span>';
+                case 'QA':
+                  return '<span style="color:#0000ff">QA</span>';
+                case 'HR':
+                  return '<span style="color:#fe00ef">HR</span>';
+                case 'SEO':
                   return '<span style="color:pink">SEO</span>';
                 default:
                   return data;
@@ -72,14 +76,19 @@ $(document).ready(function () {
         ]
       });
 
-      // Event listener for the SeeDetails button
       $('#EmployeeTable tbody').on('click', '.SeeDetails', function () {
         var data = table.row($(this).parents('tr')).data();
         var modal = $('#EmployeeDetailsModal');
 
+        var dob = new Date(data.DOB);
+        var day = dob.getDate().toString().padStart(2, '0');
+        var month = dob.toLocaleString('default', { month: 'short' });
+        var year = dob.getFullYear();
+        var dobString = day + '-' + month + '-' + year;
+
         modal.find('#Name').text(data.Name);
         modal.find('#Email').text(data.Email);
-        modal.find('#DOB').text(data.DOB);
+        modal.find('#DOB').text(dobString);
         modal.find('#Gender').text(data.Gender === 0 ? 'Male' : 'Female');
         modal.find('#Designation').text(data.Designation);
         modal.find('#State').text(data.State);
@@ -87,19 +96,31 @@ $(document).ready(function () {
         modal.find('#Postcode').text(data.Postcode);
         modal.find('#Phone').text(data.PhoneNumber);
         modal.find('#Department').text(data.Department);
-        modal.find('#MonthlySalary').text(data.MonthlySalary);
+        modal.find('#MonthlySalary').text("$"+data.MonthlySalary);
         modal.find('#DateOfJoining').text(data.DateOfJoining);
         modal.find('#TotalExperience').text(data.TotalExperience);
         modal.find('#Remark').text(data.Remarks);
 
         modal.modal('show');
       });
+    },
+    error: function () {
+      Swal.fire({
+        icon: 'error',
+        title: 'No Records Found',
+        text: 'Insert Employee to Display Record',
+      });
     }
+
   });
 });
 
-// Add a click event listener to the "x" button
-$('.close').on('click', function() {
-  // Get the modal element and hide it
+$('.close').on('click', function () {
   $('#EmployeeDetailsModal').modal('hide');
 });
+
+function removeclass() {
+  $("#eid").removeClass("sorting_disabled");
+  $("#eid").removeClass("sorting_asc");
+}
+
