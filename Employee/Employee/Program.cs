@@ -10,31 +10,19 @@ using System.Linq;
 using Formatting = Newtonsoft.Json.Formatting;
 using MyValidation;
 
+
 namespace Employee
 {
+
     class Program
     {
-        public enum Gender
-        {
-            M = 1,
-            F
-        }
-        [JsonConverter(typeof(StringEnumConverter))]
 
-        public enum Department
-        {
-            Sales=1,
-            Marketing,
-            Development,
-            QA,
-            HR,
-            SEO
-        }
+
         public class Employee
         {
-            public int EmployeeID { get; set; }
+            public int EmployeeId { get; set; }
             public string Name { get; set; }
-            public DateTime DOB { get; set; }
+            public DateTime DateOfBirth { get; set; }
             public Gender Gender { get; set; }
             public string Designation { get; set; }
             public string City { get; set; }
@@ -104,43 +92,42 @@ namespace Employee
 
             try
             {
+                string filePath = ConfigurationManager.AppSettings["EmployeePath"];
 
                 List<int> employeeIDs = new List<int>();
                 int newID;
 
-                string filePath = ConfigurationManager.AppSettings["EmployeePath"];
-                var fileName = filePath;
-                var f = new FileInfo(filePath);
+                FileInfo fileInfo = new FileInfo(filePath);
 
                 Employee e1 = new Employee();
 
-                if (f.Length != 0)
+                if (fileInfo.Length != 0)
                 {   
-                    if (File.Exists(fileName))
+                    if (File.Exists(filePath))
                     {
 
-                        string json = File.ReadAllText(fileName);
+                        string json = File.ReadAllText(filePath);
                         JArray jArray = JArray.Parse(json);
 
                         foreach (JObject item in jArray)
                         {
-                            int id = (int)item["EmployeeID"];
+                            int id = (int)item["EmployeeId"];
                             employeeIDs.Add(id);
                         }
 
                         newID = employeeIDs.Max() + 1;
-                        e1.EmployeeID = newID;
+                        e1.EmployeeId = newID;
 
                     }
                 }
                 else
                 {
                     newID = 1;
-                    e1.EmployeeID = newID;
+                    e1.EmployeeId = newID;
 
                 }
 
-                Console.WriteLine("ID : " + e1.EmployeeID);
+                Console.WriteLine("ID : " + e1.EmployeeId);
 
                 Console.Write("Enter Name : ");
                 e1.Name = Console.ReadLine().Trim();
@@ -152,29 +139,28 @@ namespace Employee
                     e1.Name = Console.ReadLine().Trim();
                 }
 
-                Console.Write("Enter DOB in dd-MMM-yyyy Format: ");
-                string dobString = Console.ReadLine().Trim();
-                DateTime dob;
-                while (!DateTime.TryParseExact(dobString, "dd-MMM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dob))
+                Console.Write("Enter DateOfBirth in dd-MMM-yyyy Format: ");
+                string DateOfBirthString = Console.ReadLine().Trim();
+                DateTime DateOfBirth;
+                while (!DateTime.TryParseExact(DateOfBirthString, "dd-MMM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOfBirth))
                 {
                     Console.WriteLine("Invalid date format..!! Please enter date in the format dd-MMM-yyyy Ex: 14-Mar-2000 ..!!");
-                    Console.Write("Enter DOB in dd-MMM-yyyy Format: ");
-                    dobString = Console.ReadLine().Trim();
+                    Console.Write("Enter DateOfBirth in dd-MMM-yyyy Format: ");
+                    DateOfBirthString = Console.ReadLine().Trim();
                 }
                 
-                e1.DOB = dob;
+                e1.DateOfBirth = DateOfBirth;
 
 
-                Console.Write("Please enter your gender (M/F): ");
-                string genderString = Console.ReadLine().ToUpper();
+                Console.Write("Please enter gender (1. Male ,2. Female): ");
+                string genderInput = Console.ReadLine();
+
                 Gender gender;
-
-
-                while (!Enum.TryParse<Gender>(genderString, out gender) || genderString.Any(char.IsDigit))
+                while (!Enum.TryParse(genderInput, out gender))
                 {
-                    Console.WriteLine("Invalid gender input. Please try again.");
-                    Console.Write("Please enter your gender (M/F): ");
-                    genderString = Console.ReadLine().ToUpper();
+                    Console.Write("Invalid gender input. Please enter your gender (1. Male ,2. Female):");
+                    genderInput = Console.ReadLine().ToUpper();
+
                 }
                 e1.Gender = gender;
 
@@ -247,7 +233,7 @@ namespace Employee
                     DateTime dateObj;
                     if (DateTime.TryParseExact(dateStr, "dd-MMM-yyyy", null, System.Globalization.DateTimeStyles.None, out dateObj))
                     {
-                        if (dateObj > e1.DOB)
+                        if (dateObj > e1.DateOfBirth)
                         {
                             DateTime now = DateTime.Now;
                             TimeSpan experience = now - dateObj;
@@ -264,7 +250,7 @@ namespace Employee
                                     Console.WriteLine("No experience..!!");
                                     e1.TotalExperience = "No Experience..!!";
 
-                                    e1.DateOfJoining = dateStr;
+                                    e1.DateOfJoining  = dateStr;
 
                                     isValidDate = true;
                                 }
@@ -273,7 +259,7 @@ namespace Employee
                                     string total = months + " months";
                                     Console.WriteLine("Total experience: " + total);
                                     e1.TotalExperience = total;
-                                    e1.DateOfJoining = dateStr;
+                                    e1.DateOfJoining  = dateStr;
                                     isValidDate = true;
                                 }
                               
@@ -283,7 +269,7 @@ namespace Employee
                                 string total = years + " years ," + months + " months";
                                 Console.WriteLine("Total experience: " + total);
                                 e1.TotalExperience = total;
-                                e1.DateOfJoining = dateStr;
+                                e1.DateOfJoining  = dateStr;
                                 isValidDate = true;
                             }
                          
@@ -315,7 +301,6 @@ namespace Employee
                     Console.Write("Select department (1: Sales, 2: Marketing, 3: Development, 4: QA, 5: HR, 6: SEO) : ");
                     int.TryParse(Console.ReadLine(), out departmentNumber);
                 }
-
                 e1.Department = (Department)(departmentNumber);
          
                 double salary;
@@ -336,15 +321,13 @@ namespace Employee
                 }
 
                 Console.WriteLine("All Fields are Validated..");
-                string filePath1 = ConfigurationManager.AppSettings["EmployeePath"];
-                var fileName1 = filePath1;
 
                 List<Employee> employees;
-                if (f.Length != 0)
+                if (fileInfo.Length != 0)
                 {
-                    if (File.Exists(fileName))
+                    if (File.Exists(filePath))
                     {
-                        var jsonData = File.ReadAllText(fileName);
+                        string jsonData = File.ReadAllText(filePath);
                         employees = JsonConvert.DeserializeObject<List<Employee>>(jsonData);
                     }
                     else
@@ -354,10 +337,10 @@ namespace Employee
 
                     employees.Add(e1);
 
-                    var sortedEmployees = employees.OrderByDescending(e => e.MonthlySalary).ToList();
+                    List<Employee> sortedEmployees = employees.OrderByDescending(e => e.MonthlySalary).ToList();
 
-                    var updatedJsonData = JsonConvert.SerializeObject(sortedEmployees, Formatting.Indented);
-                    File.WriteAllText(fileName, updatedJsonData);
+                    string updatedJsonData = JsonConvert.SerializeObject(sortedEmployees, Formatting.Indented);
+                    File.WriteAllText(filePath, updatedJsonData);
 
                     Console.WriteLine("Employee data sorted by salary and saved to EmployeeData_07_04_2023.json file.");
 
@@ -367,9 +350,9 @@ namespace Employee
                     employees = new List<Employee>();
 
                     employees.Add(e1);
-                    var jsondata = JsonConvert.SerializeObject(employees, Formatting.Indented);
+                    string jsondata = JsonConvert.SerializeObject(employees, Formatting.Indented);
 
-                    File.WriteAllText(fileName1, jsondata);
+                    File.WriteAllText(filePath, jsondata);
 
                     Console.WriteLine("Employee data saved to EmployeeData_07_04_2023.json file.");
                 }
@@ -384,11 +367,10 @@ namespace Employee
         static void DeleteEmployee()
         {
             string filePath = ConfigurationManager.AppSettings["EmployeePath"];
-            var fileNameDelete = filePath;
 
-            if (File.Exists(fileNameDelete))
+            if (File.Exists(filePath))
             {
-                string json = File.ReadAllText(fileNameDelete);
+                string json = File.ReadAllText(filePath);
                 List<Employee> employees = JsonConvert.DeserializeObject<List<Employee>>(json);
 
                 Console.WriteLine("---------------------------------------------");
@@ -397,9 +379,9 @@ namespace Employee
                 foreach (Employee employee in employees)
                 {
                     Console.WriteLine("---------------------------------------------");
-                    Console.WriteLine($"ID: {employee.EmployeeID}");
+                    Console.WriteLine($"ID: {employee.EmployeeId}");
                     Console.WriteLine($"Name: {employee.Name}");
-                    Console.WriteLine($"DOB: {employee.DOB}");
+                    Console.WriteLine($"DateOfBirth: {employee.DateOfBirth}");
                     Console.WriteLine($"Gender: {employee.Gender}");
                     Console.WriteLine($"Designation: {employee.Designation}");
                     Console.WriteLine($"City: {employee.City}");
@@ -407,7 +389,7 @@ namespace Employee
                     Console.WriteLine($"Postcode: {employee.Postcode}");
                     Console.WriteLine($"Phone Number: {employee.PhoneNumber}");
                     Console.WriteLine($"Email: {employee.Email}");
-                    Console.WriteLine($"Date of Joining: {employee.DateOfJoining}");
+                    Console.WriteLine($"Date of Joining: {employee.DateOfJoining }");
                     Console.WriteLine($"Total Experience: {employee.TotalExperience}");
                     Console.WriteLine($"Remarks: {employee.Remarks}");
                     Console.WriteLine($"Department: {employee.Department}");
@@ -418,8 +400,8 @@ namespace Employee
 
                 Console.Write("Enter ID to Delete  : ");
                 int idToDelete = Convert.ToInt32(Console.ReadLine());
-
-                Employee employeeToDelete = employees.FirstOrDefault(e => e.EmployeeID == idToDelete);
+                    
+                Employee employeeToDelete = employees.FirstOrDefault(e => e.EmployeeId == idToDelete);
 
                 if (employeeToDelete != null)
                 {
@@ -427,7 +409,7 @@ namespace Employee
 
                     string updatedJson = JsonConvert.SerializeObject(employees, Formatting.Indented);
 
-                    File.WriteAllText(fileNameDelete, updatedJson);
+                    File.WriteAllText(filePath, updatedJson);
 
                     Console.WriteLine($"Employee with ID {idToDelete} deleted successfully!");
                 }

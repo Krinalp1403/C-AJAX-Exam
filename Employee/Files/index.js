@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
   var table = null;
   $.ajax({
@@ -15,7 +14,7 @@ $(document).ready(function () {
         },
         bInfo: false,
         columns: [{
-            data: 'EmployeeID',
+            data: 'EmployeeId',
             sorting: false,
             orderable: false
           },
@@ -62,7 +61,7 @@ $(document).ready(function () {
             data: 'Gender',
             orderable: false,
             render: function (data, type, row) {
-              return data === 0 ? 'M' : 'F';
+              return data === "Male" ? 'M' : 'F';
             }
           },
 
@@ -80,23 +79,25 @@ $(document).ready(function () {
         var data = table.row($(this).parents('tr')).data();
         var modal = $('#EmployeeDetailsModal');
 
-        var dob = new Date(data.DOB);
+        var dob = new Date(data.DateOfBirth);
         var day = dob.getDate().toString().padStart(2, '0');
-        var month = dob.toLocaleString('default', { month: 'short' });
+        var month = dob.toLocaleString('default', {
+          month: 'short'
+        });
         var year = dob.getFullYear();
         var dobString = day + '-' + month + '-' + year;
 
         modal.find('#Name').text(data.Name);
         modal.find('#Email').text(data.Email);
-        modal.find('#DOB').text(dobString);
-        modal.find('#Gender').text(data.Gender === 0 ? 'Male' : 'Female');
+        modal.find('#DateOfBirth').text(dobString);
+        modal.find('#Gender').text(data.Gender);
         modal.find('#Designation').text(data.Designation);
         modal.find('#State').text(data.State);
         modal.find('#City').text(data.City);
         modal.find('#Postcode').text(data.Postcode);
         modal.find('#Phone').text(data.PhoneNumber);
         modal.find('#Department').text(data.Department);
-        modal.find('#MonthlySalary').text("$"+data.MonthlySalary);
+        modal.find('#MonthlySalary').text("$" + data.MonthlySalary);
         modal.find('#DateOfJoining').text(data.DateOfJoining);
         modal.find('#TotalExperience').text(data.TotalExperience);
         modal.find('#Remark').text(data.Remarks);
@@ -122,7 +123,6 @@ $(document).ready(function () {
             break;
         }
         modal.modal('show');
-        
       });
     },
     error: function () {
@@ -132,11 +132,7 @@ $(document).ready(function () {
         text: 'Insert Employee to Display Record',
       });
     }
-
   });
-
-
-
 });
 
 $('.close').on('click', function () {
@@ -144,9 +140,6 @@ $('.close').on('click', function () {
 });
 
 function removeclass() {
-  // Get the text content of the #Department span element
-
   $("#eid").removeClass("sorting_disabled");
   $("#eid").removeClass("sorting_asc");
 }
-

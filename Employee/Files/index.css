@@ -15,13 +15,14 @@ body {
 }
 
 
-th,tbody {
+th,
+tbody {
     font-size: 18px;
     text-align: center;
 }
 
 td {
-    font-size: 16px!important;
+    font-size: 16px !important;
 }
 
 .close,
@@ -64,11 +65,12 @@ table {
     border-bottom-color: #e1dddd !important;
     box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
 }
-.modal{
+
+.modal {
     color: #173a5d;
 }
 
-.d-inline{
+.d-inline {
     display: inline-block;
     margin-right: 7%;
 }
