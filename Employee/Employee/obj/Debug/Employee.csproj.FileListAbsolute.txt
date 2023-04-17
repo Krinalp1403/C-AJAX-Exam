@@ -31,3 +31,14 @@ D:\C# AJAX Exam Krinal\Employee\Employee\obj\Debug\Employee.csproj.CoreCompileIn
 D:\C# AJAX Exam Krinal\Employee\Employee\obj\Debug\Employee.csproj.CopyComplete
 D:\C# AJAX Exam Krinal\Employee\Employee\obj\Debug\Employee.exe
 D:\C# AJAX Exam Krinal\Employee\Employee\obj\Debug\Employee.pdb
+D:\C-AJAX-Exam\Employee\Employee\obj\Debug\Employee.csproj.AssemblyReference.cache
+D:\C-AJAX-Exam\Employee\Employee\obj\Debug\Employee.csproj.SuggestedBindingRedirects.cache
+D:\C-AJAX-Exam\Employee\Employee\obj\Debug\Employee.csproj.CoreCompileInputs.cache
+D:\C-AJAX-Exam\Employee\Employee\obj\Debug\Employee.exe
+D:\C-AJAX-Exam\Employee\Employee\obj\Debug\Employee.pdb
+D:\C-AJAX-Exam\Employee\Employee\bin\Debug\Employee.exe.config
+D:\C-AJAX-Exam\Employee\Employee\bin\Debug\Employee.exe
+D:\C-AJAX-Exam\Employee\Employee\bin\Debug\Employee.pdb
+D:\C-AJAX-Exam\Employee\Employee\bin\Debug\Newtonsoft.Json.dll
+D:\C-AJAX-Exam\Employee\Employee\bin\Debug\Newtonsoft.Json.xml
+D:\C-AJAX-Exam\Employee\Employee\obj\Debug\Employee.csproj.CopyComplete

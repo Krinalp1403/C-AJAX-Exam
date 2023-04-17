@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Employee",
+    "\\Employee\\Employee",
+    "\\Employee\\Employee\\MyValidation"
   ],
+  "SelectedNode": "\\Employee\\Employee\\Program.cs",
   "PreviewInSolutionExplorer": false
 }

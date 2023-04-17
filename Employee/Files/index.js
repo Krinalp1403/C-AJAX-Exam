@@ -101,7 +101,28 @@ $(document).ready(function () {
         modal.find('#TotalExperience').text(data.TotalExperience);
         modal.find('#Remark').text(data.Remarks);
 
+        switch (data.Department) {
+          case 'Sales':
+            $('#Department').css('color', '#ff0000');
+            break;
+          case 'Marketing':
+            $('#Department').css('color', '#005400');
+            break;
+          case 'Development':
+            $('#Department').css('color', '#000');
+            break;
+          case 'QA':
+            $('#Department').css('color', '#0000ff');
+            break;
+          case 'HR':
+            $('#Department').css('color', '#fe00ef');
+            break;
+          case 'SEO':
+            $('#Department').css('color', 'pink');
+            break;
+        }
         modal.modal('show');
+        
       });
     },
     error: function () {
@@ -113,6 +134,9 @@ $(document).ready(function () {
     }
 
   });
+
+
+
 });
 
 $('.close').on('click', function () {
@@ -120,6 +144,8 @@ $('.close').on('click', function () {
 });
 
 function removeclass() {
+  // Get the text content of the #Department span element
+
   $("#eid").removeClass("sorting_disabled");
   $("#eid").removeClass("sorting_asc");
 }

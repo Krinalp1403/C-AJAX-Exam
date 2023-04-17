@@ -7,72 +7,23 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using static Employee.Program;
 using Formatting = Newtonsoft.Json.Formatting;
+using MyValidation;
 
 namespace Employee
 {
-    public static class MyExtensions
-    {
-        public static bool IsValidEmail(this string email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return false;
-
-            string pattern = @"^([\w\.\-]+)@([\w\-]+)((\.com|\.org|\.in)+)$";
-
-            var regex = new Regex(pattern);
-            var match = regex.Match(email);
-            return match.Success;
-        }
-        public static bool IsValidName(this string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                return false;
-
-            string pattern = @"^[a-zA-Z]+$";
-
-            var regex = new Regex(pattern);
-            var match = regex.Match(name);
-            return match.Success;
-        }
-
-        public static bool IsValidPhoneNumber(this string number)
-        {
-            return number.ToString().Length == 10;
-        }
-        public static bool IsValidPostCode(this string number)
-        {
-            return number.ToString().Length <= 10;
-        }
-
-        public static bool IsValidSalary(this double salary)
-        {
-            return salary >= 10000 && salary <= 50000;
-        }
-
-        public static bool IsValidDepartment(this string desig)
-        {
-            return Enum.GetNames(typeof(Department)).Contains(desig);
-        }
-
-    }
-
-
-
     class Program
     {
-
         public enum Gender
         {
-            M,
+            M = 1,
             F
         }
         [JsonConverter(typeof(StringEnumConverter))]
+
         public enum Department
         {
-            Sales,
+            Sales=1,
             Marketing,
             Development,
             QA,
@@ -153,6 +104,7 @@ namespace Employee
 
             try
             {
+
                 List<int> employeeIDs = new List<int>();
                 int newID;
 
@@ -160,12 +112,10 @@ namespace Employee
                 var fileName = filePath;
                 var f = new FileInfo(filePath);
 
-
                 Employee e1 = new Employee();
 
-
                 if (f.Length != 0)
-                {
+                {   
                     if (File.Exists(fileName))
                     {
 
@@ -194,6 +144,7 @@ namespace Employee
 
                 Console.Write("Enter Name : ");
                 e1.Name = Console.ReadLine().Trim();
+
                 while (string.IsNullOrEmpty(e1.Name) || !e1.Name.IsValidName())
                 {
                     Console.WriteLine("Invalid Name!");
@@ -305,11 +256,37 @@ namespace Employee
                             int years = totalMonths / 12;
                             int months = totalMonths % 12;
 
-                            string total = years + " years ," + months + " months";
-                            Console.WriteLine("Total experience: " + total);
-                            e1.TotalExperience = total;
-                            e1.DateOfJoining = dateStr;
-                            isValidDate = true;
+                          
+                            if(years <= 0 )
+                            {
+                                if (months <= 0)
+                                {
+                                    Console.WriteLine("No experience..!!");
+                                    e1.TotalExperience = "No Experience..!!";
+
+                                    e1.DateOfJoining = dateStr;
+
+                                    isValidDate = true;
+                                }
+                                else
+                                {
+                                    string total = months + " months";
+                                    Console.WriteLine("Total experience: " + total);
+                                    e1.TotalExperience = total;
+                                    e1.DateOfJoining = dateStr;
+                                    isValidDate = true;
+                                }
+                              
+                            }
+                            else
+                            {
+                                string total = years + " years ," + months + " months";
+                                Console.WriteLine("Total experience: " + total);
+                                e1.TotalExperience = total;
+                                e1.DateOfJoining = dateStr;
+                                isValidDate = true;
+                            }
+                         
                         }
                         else
                         {
@@ -339,8 +316,8 @@ namespace Employee
                     int.TryParse(Console.ReadLine(), out departmentNumber);
                 }
 
-                e1.Department = (Department)(departmentNumber - 1);
-
+                e1.Department = (Department)(departmentNumber);
+         
                 double salary;
                 bool validSalary = false;
 
